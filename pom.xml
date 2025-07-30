@@ -6,12 +6,12 @@
 
     <groupId>com.copperpenguin96</groupId>
     <artifactId>smartnbt</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
         <repository>
-            <id>repsy></id>
+            <id>repsy</id>
             <name>Public Repo for RM projects</name>
             <url>https://repo.repsy.io/mvn/copperpenguin96/rusty-mineshaft</url>
         </repository>
