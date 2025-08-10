@@ -3,6 +3,7 @@ package com.copperpenguin96.smartnbt.tags;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 public class ByteArrayTag extends NbtTag {
 
@@ -26,6 +27,35 @@ public class ByteArrayTag extends NbtTag {
     public void setValue(byte[] value) {
         super.setValue(value);
         setPayload();
+    }
+
+    public void add(byte bt) {
+        ArrayList<Byte> bts = getArrayList();
+        bts.add(bt);
+        setValue(getByteArray(bts.toArray()));
+    }
+
+    public void delete(int index) {
+        ArrayList<Byte> bts = getArrayList();
+        bts.remove(index);
+        setValue(getByteArray(bts.toArray()));
+    }
+
+    private ArrayList<Byte> getArrayList() {
+        ArrayList<Byte> bts = new ArrayList<>();
+        for (byte b : getByteArrayValue()) {
+            bts.add(b);
+        }
+        return bts;
+    }
+
+    private byte[] getByteArray(Object[] o) {
+        byte[] bts = new byte[o.length];
+        for (int x = 0; x < o.length; x++) {
+            bts[x] = (byte)o[x];
+        }
+
+        return bts;
     }
 
     @Override
@@ -56,5 +86,18 @@ public class ByteArrayTag extends NbtTag {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder bui = new StringBuilder("[B;");
+
+        for (int x = 0; x < size(); x++) {
+            bui.append(getByteArrayValue()[x]).append("b");
+            if (x < size() - 1) bui.append(",");
+        }
+
+        bui.append("]");
+        return bui.toString();
     }
 }

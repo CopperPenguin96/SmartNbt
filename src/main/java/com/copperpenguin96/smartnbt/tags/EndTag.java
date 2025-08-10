@@ -25,4 +25,9 @@ public class EndTag extends NbtTag {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

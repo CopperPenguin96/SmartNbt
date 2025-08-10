@@ -1,6 +1,13 @@
 package com.copperpenguin96.smartnbt.tags;
 
+/**
+ * Hosts definitions for the numerous tags defined by NBT.
+ * Makes saving/loading/parsing easier.
+ */
 public enum TagDef {
+    /**
+     * Tells NBT the end of a file or compound.
+     */
     End((byte) 0),
     Byte((byte) 1),
     Short((byte) 2),
@@ -10,7 +17,15 @@ public enum TagDef {
     Double((byte) 6),
     ByteArray((byte) 7),
     String((byte) 8),
+
+    /**
+     * A list of tags that have no names. Is not the same as a compound
+     */
     List((byte) 9),
+
+    /**
+     * A list of tags that have names. Is not the same as a list
+     */
     Compound((byte) 10),
     IntArray((byte) 11),
     LongArray((byte) 12),

@@ -45,4 +45,10 @@ public class BoolTag extends ByteTag {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String toString() {
+        if (getBoolValue()) return "true";
+        else return "false";
+    }
 }

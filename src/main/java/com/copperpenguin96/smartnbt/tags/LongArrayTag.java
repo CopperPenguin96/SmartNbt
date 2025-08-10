@@ -40,6 +40,29 @@ public class LongArrayTag extends NbtTag {
         setPayload();
     }
 
+    public void delete(int index) {
+        ArrayList<Long> bts = getArrayList();
+        bts.remove(index);
+        setValue(getLongArray(bts.toArray()));
+    }
+
+    private ArrayList<Long> getArrayList() {
+        ArrayList<Long> bts = new ArrayList<>();
+        for (long b : getLongArrayValue()) {
+            bts.add(b);
+        }
+        return bts;
+    }
+
+    private long[] getLongArray(Object[] o) {
+        long[] bts = new long[o.length];
+        for (int x = 0; x < o.length; x++) {
+            bts[x] = (long)o[x];
+        }
+
+        return bts;
+    }
+
     @Override
     public TagDef getID() {
         return TagDef.LongArray;
@@ -68,5 +91,18 @@ public class LongArrayTag extends NbtTag {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder bui = new StringBuilder("[L;");
+
+        for (int x = 0; x < size(); x++) {
+            bui.append(getLongArrayValue()[x]).append("l");
+            if (x < size() - 1) bui.append(",");
+        }
+
+        bui.append("]");
+        return bui.toString();
     }
 }

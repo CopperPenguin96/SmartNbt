@@ -5,10 +5,16 @@ import com.copperpenguin96.smartnbt.tags.NbtTag;
 
 import java.io.*;
 
+/**
+ * An NBT binary file.
+ */
 public class NbtFile {
 
     private File _file = null;
 
+    /**
+     * The root tag of this file. In java edition, it's always a compound.
+     */
     public CompoundTag Root = null;
 
     public NbtFile(String path) {

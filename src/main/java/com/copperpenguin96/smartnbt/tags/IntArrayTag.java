@@ -1,5 +1,7 @@
 package com.copperpenguin96.smartnbt.tags;
 
+import com.copperpenguin96.smartnbt.serialization.SerializerOptions;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -41,6 +43,29 @@ public class IntArrayTag extends NbtTag {
         setPayload();
     }
 
+    public void delete(int index) {
+        ArrayList<Integer> bts = getArrayList();
+        bts.remove(index);
+        setValue(getIntArray(bts.toArray()));
+    }
+
+    private ArrayList<Integer> getArrayList() {
+        ArrayList<Integer> bts = new ArrayList<>();
+        for (int b : getIntArrayValue()) {
+            bts.add(b);
+        }
+        return bts;
+    }
+
+    private int[] getIntArray(Object[] o) {
+        int[] bts = new int[o.length];
+        for (int x = 0; x < o.length; x++) {
+            bts[x] = (int)o[x];
+        }
+
+        return bts;
+    }
+
     @Override
     public TagDef getID() {
         return TagDef.IntArray;
@@ -69,5 +94,18 @@ public class IntArrayTag extends NbtTag {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder bui = new StringBuilder("[I;");
+
+        for (int x = 0; x < size(); x++) {
+            bui.append(getIntArrayValue()[x]).append("i");
+            if (x < size() - 1) bui.append(",");
+        }
+
+        bui.append("]");
+        return bui.toString();
     }
 }

@@ -1,5 +1,7 @@
 package com.copperpenguin96.smartnbt.tags;
 
+import com.copperpenguin96.smartnbt.serialization.SerializerOptions;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -44,5 +46,20 @@ public class IntTag extends NbtTag {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "" + getIntValue();
+    }
+
+    public String toString(SerializerOptions options) {
+        boolean hex = options.contains("use-hex");
+
+        if (hex) {
+            return "0x" + Integer.toHexString(getIntValue());
+        }
+
+        return toString();
     }
 }

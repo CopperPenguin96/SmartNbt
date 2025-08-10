@@ -1,5 +1,8 @@
 package com.copperpenguin96.smartnbt;
 
+/**
+ * Throws when there's formatting exceptions with NBT. (like inproper names, invalid SNBT parsing, etc.)
+ */
 public class NbtFormatException extends Exception {
     public NbtFormatException() {
         super();

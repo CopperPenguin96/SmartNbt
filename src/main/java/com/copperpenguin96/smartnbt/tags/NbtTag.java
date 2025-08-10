@@ -310,4 +310,84 @@ public abstract class NbtTag {
 
         return tag;
     }
+
+    /**
+     * Gets the SNBT representation of this tag without any serializer options.
+     * @return An SNBT string with no options.
+     */
+    @Override
+    public abstract String toString();
+
+    /**
+     * Creates a compound tag.
+     * @param name The name of the tag.
+     * @param values The tags to associate with this tag.
+     * @return A compound tag with the name and values specified.
+     */
+    public static CompoundTag createCompound(String name, NbtTag[] values) {
+        return new CompoundTag(name, values);
+    }
+
+    /**
+     * Creates a list tag.
+     * @param name The name of the tag.
+     * @param values The values to associate with this tag.
+     * @return A list tag with the name and values specified.
+     */
+    public static ListTag createList(String name, NbtTag[] values) {
+        try {
+            return new ListTag(name, values);
+        } catch (NbtFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates a tag based on the provided value.
+     * *NOTE*: This does not work with lists and compounds.
+     * Use NbtTag.createCompound() and NbtTag.createList() respectively
+     * @param name What to name the tag
+     * @param value The value of the tag
+     * @return A complete NBT Tag with a name and value.
+     * @param <T> The type of the value.
+     */
+    public static <T> NbtTag create(String name, T value) {
+        NbtTag tag = null;
+        if (value instanceof boolean) {
+            tag = new BoolTag(name, (boolean)value);
+        } else if (value instanceof byte) {
+            tag = new ByteTag(name, (byte)value);
+        } else if (value instanceof short) {
+            tag = new ShortTag(name, (short)value);
+        } else if (value instanceof int) {
+            tag = new IntTag(name, (int)value);
+        } else if (value instanceof long) {
+            tag = new LongTag(name, (long)value);
+        } else if (value instanceof float) {
+            tag = new FloatTag(name, (float)value);
+        } else if (value instanceof double) {
+            tag = new DoubleTag(name, (double)value);
+        } else if (value instanceof String) {
+            tag = new StringTag(name, (String)value);
+        } else if (value instanceof byte[]) {
+            tag = new ByteArrayTag(name, (byte[])value);
+        } else if (value instanceof int[]) {
+            tag = new IntArrayTag(name, (int[])value);
+        } else if (value instanceof long[]) {
+            tag = new LongArrayTag(name, (long[])value);;
+        }
+
+        return tag;
+        /*else if (value.getClass().isArray()) {
+           // todo  if (value instanceof )
+        }*/
+    }
+
+    /**
+     * Creates an end tag.
+     * @return An end tag
+     */
+    public static EndTag createEnd() {
+        return new EndTag();
+    }
 }

@@ -45,4 +45,11 @@ public class DoubleTag extends NbtTag {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String toString() {
+        String orig = "" + getDoubleValue();
+        if (orig.contains(".")) return orig;
+        else return getDoubleValue() + "d";
+    }
 }

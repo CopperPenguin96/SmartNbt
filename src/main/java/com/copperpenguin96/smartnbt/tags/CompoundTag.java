@@ -1,5 +1,7 @@
 package com.copperpenguin96.smartnbt.tags;
 
+import com.copperpenguin96.smartnbt.serialization.SerializerOptions;
+
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.OutputStream;
@@ -10,6 +12,7 @@ public class CompoundTag extends NbtTag {
     public CompoundTag(String name) {
         super(name);
         setID(TagDef.Compound);
+        setValue(new NbtTag[]{});
     }
 
     public CompoundTag(CompoundTag tag) {
@@ -64,29 +67,23 @@ public class CompoundTag extends NbtTag {
         super.setPayload(payload);
     }
 
-    public <T> void add(T value) throws InvalidObjectException {
-        NbtTag tag = null;
-        if (value instanceof boolean) {
-            tag = new BoolTag(Name, (boolean)value);
-        } else if (value instanceof byte[]) {
-            tag = new ByteArrayTag(Name, (byte[])value);
-        } else if (value instanceof byte) {
-            tag = new ByteTag(Name, (byte)value);
-        } else if (value instanceof CompoundTag) {
-            tag = new CompoundTag((CompoundTag)value);
-        } else if (value instanceof double) {
-            // todo setup rest of data types
-        } else {
-            throw new InvalidObjectException("value is not applicable type");
-        }
-
+    public <T> void add(String name, T value) throws InvalidObjectException {
+        NbtTag tag = NbtTag.create(name, value);
         add(tag);
     }
 
     public void add(NbtTag tag) {
-        List<NbtTag> items = Arrays.stream(getItems()).toList();
+        if (getItems() == null) {
+            setValue(new ArrayList<>());
+        }
+
+        ArrayList<NbtTag> items = getArrayList();
         items.add(tag);
         setValue(items);
+    }
+
+    private ArrayList<NbtTag> getArrayList() {
+        return new ArrayList<>(Arrays.asList(getItems()));
     }
 
     public void clear() {
@@ -162,5 +159,66 @@ public class CompoundTag extends NbtTag {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder compBuilder = new StringBuilder("{");
+        if (size() == 0) return "{}";
+
+        for (int x = 0; x < size(); x++) {
+            String name = getItems()[x].Name;
+
+            if (!name.matches("^[0-9A-Za-z_\\-.+]+$")) {
+                name = "\"" + name + "\"";
+            }
+
+            name += ":";
+
+            compBuilder.append(name);
+            compBuilder.append(getItems()[x].toString());
+
+            if (x < getItems().length - 1) compBuilder.append(",");
+        }
+
+        compBuilder.append("}");
+        return compBuilder.toString();
+    }
+
+    public String toString(SerializerOptions options) {
+        StringBuilder compBuilder = new StringBuilder("{");
+        if (size() == 0) return "{}";
+
+        for (int x = 0; x < size(); x++) {
+            NbtTag tag = getItems()[x];
+            String name = tag.Name;
+
+            if (!name.matches("^[0-9A-Za-z_\\-.+]+$")) {
+                name = "\"" + name + "\"";
+            }
+
+            name += ":";
+
+            compBuilder.append(name);
+
+            // If tag is float or int, instruct to use options as necessary.
+            switch (tag.getID()) {
+                case Float:
+                    FloatTag floatTag = (FloatTag)tag;
+                    compBuilder.append(floatTag.toString(options));
+                    break;
+                case Int:
+                    IntTag intTag = (IntTag)tag;
+                    compBuilder.append(intTag.toString(options));
+                    break;
+                default:
+                    compBuilder.append(tag);
+            }
+
+            if (x < getItems().length - 1) compBuilder.append(",");
+        }
+
+        compBuilder.append("}");
+        return compBuilder.toString();
     }
 }
