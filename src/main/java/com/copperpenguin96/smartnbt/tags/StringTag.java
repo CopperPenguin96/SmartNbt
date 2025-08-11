@@ -9,6 +9,8 @@ public class StringTag extends NbtTag {
 
     public StringTag(String name) {
         super(name);
+        setPayload();
+        setID(TagDef.String);
     }
 
     /**
@@ -19,6 +21,12 @@ public class StringTag extends NbtTag {
      */
     public StringTag(String name, String value) {
         super(name, value);
+        setPayload();
+        setID(TagDef.String);
+    }
+
+    public StringTag() {
+        super("");
         setPayload();
         setID(TagDef.String);
     }

@@ -39,6 +39,10 @@ public class ListTag extends NbtTag {
         _type = getType(value.get(0));
     }
 
+    public <T> ListTag(ArrayList<T> value) throws NbtFormatException {
+        this("", value);
+    }
+
     public <T> ListTag(String name, List<T> value) throws NbtFormatException {
         super(name);
         setValue(getTArray(value));

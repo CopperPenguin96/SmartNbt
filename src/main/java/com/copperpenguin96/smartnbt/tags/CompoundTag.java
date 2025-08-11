@@ -9,6 +9,12 @@ import java.util.*;
 
 public class CompoundTag extends NbtTag {
 
+    public CompoundTag() {
+        super("");
+        setID(TagDef.Compound);
+        setValue(new NbtTag[]{});
+    }
+
     public CompoundTag(String name) {
         super(name);
         setID(TagDef.Compound);

@@ -21,6 +21,24 @@ public class IntArrayTag extends NbtTag {
         setID(TagDef.IntArray);
     }
 
+    public IntArrayTag(ArrayList<Integer> value) {
+        this("", value);
+    }
+
+    public IntArrayTag(String name, ArrayList<Integer> value) {
+        super(name);
+        setID(TagDef.IntArray);
+
+        int[] bts = new int[value.size()];
+
+        for (int x = 0; x < value.size(); x++) {
+            bts[x] = value.get(x);
+        }
+
+        setValue(bts);
+        setPayload();
+    }
+
     public IntArrayTag(int[] value) {
         super(null, value);
         setPayload();

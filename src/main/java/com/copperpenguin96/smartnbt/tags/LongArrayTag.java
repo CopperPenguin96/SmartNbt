@@ -18,6 +18,24 @@ public class LongArrayTag extends NbtTag {
         setID(TagDef.LongArray);
     }
 
+    public LongArrayTag(ArrayList<Long> value) {
+        this("", value);
+    }
+
+    public LongArrayTag(String name, ArrayList<Long> value) {
+        super(name);
+        setID(TagDef.LongArray);
+
+        long[] bts = new long[value.size()];
+
+        for (int x = 0; x < value.size(); x++) {
+            bts[x] = value.get(x);
+        }
+
+        setValue(bts);
+        setPayload();
+    }
+
     public LongArrayTag(long[] value) {
         super(null, value);
         setPayload();

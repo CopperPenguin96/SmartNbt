@@ -18,6 +18,24 @@ public class ByteArrayTag extends NbtTag {
         setID(TagDef.ByteArray);
     }
 
+    public ByteArrayTag(ArrayList<Byte> value) {
+        this ("", value);
+    }
+
+    public ByteArrayTag(String name, ArrayList<Byte> value) {
+        super(name);
+        setID(TagDef.ByteArray);
+
+        byte[] bts = new byte[value.size()];
+
+        for (int x = 0; x < value.size(); x++) {
+            bts[x] = value.get(x);
+        }
+
+        setValue(bts);
+        setPayload();
+    }
+
     public ByteArrayTag(byte[] value) {
         super(null, value);
         setPayload();
