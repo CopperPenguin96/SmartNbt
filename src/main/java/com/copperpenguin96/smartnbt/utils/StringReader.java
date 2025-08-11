@@ -4,6 +4,7 @@
 package com.copperpenguin96.smartnbt.utils;
 
 import com.copperpenguin96.smartnbt.NbtFormatException;
+import com.copperpenguin96.smartnbt.utils.NumberTools;
 
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
@@ -98,14 +99,75 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
-    public boolean isInt() {
-        String peeked = peekStringUntil('i');
+    public boolean isByte() {
+        String peeked = peekStringUntil('b', 'B');
 
         if (peeked == null) {
             return false;
         } else if (peeked.matches("^[0-9]*$")) {
-            int value = Integer.parseInt(peeked);
+            return NumberTools.isIntSize(peeked);
         }
+
+        return false;
+    }
+
+    public boolean isShort() {
+        String peeked = peekStringUntil('s', 'S');
+
+        if (peeked == null) {
+            return false;
+        } else if (peeked.matches("^[0-9]*$")) {
+            return NumberTools.isShortSize(peeked);
+        }
+
+        return false;
+    }
+
+    public boolean isInt() {
+        String peeked = peekStringUntil('i', 'I');
+
+        if (peeked == null) {
+            peeked = peekRest();
+        }
+
+        // Different because peeked can be null, meaning they didn't use the i modifier
+        if (peeked.matches("^[0-9]*$")) {
+            return NumberTools.isIntSize(peeked);
+        }
+
+        return false;
+    }
+
+    public boolean isLong() {
+        String peeked = peekStringUntil('l', 'L');
+
+        if (peeked == null) {
+            return false;
+        } else if (peeked.matches("^[0-9]*$")) {
+            return NumberTools.isLongSize(peeked);
+        }
+
+        return false;
+    }
+
+    public boolean isFloat() {
+        String peeked = peekStringUntil('f', 'F');
+
+        if (peeked == null) {
+            return false;
+        }
+
+        return NumberTools.isFloat(peeked);
+    }
+
+    public boolean isDouble() {
+        String peeked = peekStringUntil('d', 'D');
+
+        if (peeked == null) {
+            peeked = peekRest();
+        }
+
+        return NumberTools.isDouble(peeked);
     }
 
     public int readInt() throws NbtFormatException {
@@ -204,12 +266,12 @@ public class StringReader implements ImmutableStringReader {
         return readStringUntil(next);
     }
 
-    public String peekStringUntil(char term) {
+    public String peekStringUntil(char... term) {
         StringBuilder result = new StringBuilder();
         for (int x = 0; x < getRemainingLength(); x++) {
             char c = peek(x);
-            if (c == term) {
-                return result.toString();
+            for (char ch : term) {
+                if (c == ch) return result.toString();
             }
 
             result.append(c);
@@ -241,6 +303,19 @@ public class StringReader implements ImmutableStringReader {
         }
 
         throw new NbtFormatException("Expected end of quote");
+    }
+
+    public String peekRest() {
+        if (!canRead()) {
+            return "";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int x = 0; x < getRemainingLength(); x++) {
+            builder.append(peek(x));
+        }
+
+        return builder.toString();
     }
 
     public String readString() throws NbtFormatException {

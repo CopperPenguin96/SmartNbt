@@ -1,9 +1,9 @@
 # SmartNBT
 
-A light-weight java solution for reading/writing NBT (Named Binary Tag) as used with Minecraft. Works with all versions of minecraft.
+A light-weight java solution for reading/writing NBT (Named Binary Tag) as used with Minecraft. Works with all versions of minecraft. Includes SNBT support as well.
 
 ## Easy to Use
-SmartNBT is super easy to use. Each NBT tag has its own object. Here is an example Compound Tag based off a simple object.
+SmartNBT is super easy to use. Each NBT tag has its own object. Here is an example Compound Tag based off a simple object. SNBT Bool Tags are also handled and can be used as an unofficial NBT type too.
 
     /*  
     * This is not an actual object that is used in any situation. It is made for example purposes only.  
@@ -24,8 +24,16 @@ SmartNBT is super easy to use. Each NBT tag has its own object. Here is an examp
       
     NbtFile file = new NbtFile(new File("example.nbt"), userTag);  
     file.save();
+	
+Needing to convert to SNBT? No problem!
 
-Notice the BoolTag object. This is an unofficial tag that wraps the tag for byte. This makes it easier for reading true/false bytes represented as 0/1. Easier readability!
+	// outputs {"Days Played":15,UserName:"Alex96","Op Level":4b,IsHardcore:false}
+	System.out.println(userTag);
+	
+Needing to convert from SNBT? Easy!
+
+	String snbt = "some random SNBT bullshit here";
+	CompoundTag compoundTag = SNBTParser.read(snbt);
 
 ## Maven
 
