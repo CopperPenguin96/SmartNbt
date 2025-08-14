@@ -3,6 +3,8 @@ package com.copperpenguin96.smartnbt;
 import com.copperpenguin96.smartnbt.tags.*;
 import com.copperpenguin96.smartnbt.utils.SNBTParser;
 
+import java.io.InvalidObjectException;
+
 public class NbtTest {
 
     public static void main(String[] args) {
@@ -15,6 +17,10 @@ public class NbtTest {
 
         System.out.println(userTag);
 
-        SNBTParser.read("");
+        try {
+            SNBTParser.read("");
+        } catch (NbtFormatException | InvalidObjectException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

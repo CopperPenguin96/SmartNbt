@@ -16,12 +16,12 @@ public abstract class NbtTag {
 
     private TagDef _def;
 
-    protected void setID(TagDef def) {
-        _def = def;
-    }
-
     public TagDef getID() {
         return _def;
+    }
+
+    protected void setID(TagDef def) {
+        _def = def;
     }
 
     private byte _pay;

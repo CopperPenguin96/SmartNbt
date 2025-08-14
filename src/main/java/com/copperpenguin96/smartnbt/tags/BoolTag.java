@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A non-official tag.
- * Just a byte tag as a 0 or a 1.
+ * An unofficial  tag (SNBT recognized)
+ * Just a byte represented as a 0 (false) or a 1 (true)
  */
 public class BoolTag extends ByteTag {
 
@@ -33,17 +33,6 @@ public class BoolTag extends ByteTag {
     public void setValue(boolean value) {
         if (value) super.setValue((byte)1);
         else super.setValue((byte)0);
-    }
-
-    @Override
-    public void writeToStream(OutputStream stream) {
-        super.writeToStream(stream);
-
-        try {
-            stream.write((getByteValue()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

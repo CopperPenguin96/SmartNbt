@@ -6,7 +6,7 @@ package com.copperpenguin96.smartnbt.tags;
  */
 public enum TagDef {
     /**
-     * Tells NBT the end of a file or compound.
+     * Tells NBT the end of a file or compound has been reached.
      */
     End((byte) 0),
     Byte((byte) 1),

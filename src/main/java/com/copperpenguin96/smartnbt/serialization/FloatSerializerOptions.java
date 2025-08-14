@@ -5,7 +5,12 @@ import com.copperpenguin96.smartnbt.tags.TagDef;
 public class FloatSerializerOptions extends SerializerOptions {
 
     public boolean getUsingFractionParts() {
-        return (boolean)_options.get("use-fraction-parts");
+        Object o = _options.get("use-fraction-parts");
+        if (o == null) {
+            return false;
+        } else {
+            return (boolean)o;
+        }
     }
 
     public void setUsingFractionParts(boolean value) {
@@ -14,7 +19,12 @@ public class FloatSerializerOptions extends SerializerOptions {
     }
 
     public boolean getUsingENotation() {
-        return (boolean)_options.get("use-e");
+        Object o = _options.get("use-e");
+        if (o == null) {
+            return false;
+        } else {
+            return (boolean)o;
+        }
     }
 
     public void setUsingUsingENotation(boolean value) {
@@ -22,20 +32,11 @@ public class FloatSerializerOptions extends SerializerOptions {
         _options.put("use-e", value);
     }
 
-    public boolean getUseUnderscore() {
-        return (boolean)_options.get("use-underscore");
-    }
-
-    public void setUseUnderscore(boolean value) {
-        _options.remove("use-underscore");
-        _options.put("use-underscore", value);
-    }
-
     public FloatSerializerOptions() {
-        this(false, false, false);
+        this(false, false);
     }
 
-    public FloatSerializerOptions(boolean useFractionParts, boolean useENotation, boolean useUnderscore) {
+    public FloatSerializerOptions(boolean useFractionParts, boolean useENotation) {
         super(TagDef.Float);
 
         setUsingFractionParts(useFractionParts);

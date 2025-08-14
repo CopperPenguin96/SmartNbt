@@ -2,7 +2,6 @@ package com.copperpenguin96.smartnbt.tags;
 
 import com.copperpenguin96.smartnbt.serialization.SerializerOptions;
 
-import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.OutputStream;
 import java.util.*;

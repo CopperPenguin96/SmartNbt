@@ -5,7 +5,12 @@ import com.copperpenguin96.smartnbt.tags.TagDef;
 public class IntSerializerOptions extends SerializerOptions {
 
     public boolean getUsingHex() {
-        return (boolean)_options.get("use-hex");
+        Object o = _options.get("use-hex");
+        if (o == null) {
+            return false;
+        } else {
+            return (boolean)o;
+        }
     }
 
     public void setUsingHex(boolean value) {
