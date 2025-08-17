@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -210,46 +211,38 @@ public abstract class NbtTag {
                 return new EndTag();
             case Byte:
                 byte by = (byte)stream.read();
-                tag = new ByteTag(name, by);
-                break;
+                return new ByteTag(name, by);
             case Short:
                 buffer = ByteBuffer.wrap(stream.readNBytes(2));
                 short sh = buffer.getShort();
-                tag = new ShortTag(name, sh);
-                break;
+                return new ShortTag(name, sh);
             case Int:
                 buffer = ByteBuffer.wrap(stream.readNBytes(4));
                 int i = buffer.getInt();
-                tag = new IntTag(name, i);
-                break;
+                return new IntTag(name, i);
             case Long:
                 buffer = ByteBuffer.wrap(stream.readNBytes(8));
                 long l = buffer.getLong();
-                tag = new LongTag(name, l);
-                break;
+                return new LongTag(name, l);
             case Float:
                 buffer = ByteBuffer.wrap(stream.readNBytes(4));
                 float f = buffer.getFloat();
-                tag = new FloatTag(name, f);
-                break;
+                return new FloatTag(name, f);
             case Double:
                 buffer = ByteBuffer.wrap(stream.readNBytes(8));
                 double d = buffer.getDouble();
-                tag = new DoubleTag(name, d);
-                break;
+                return new DoubleTag(name, d);
             case ByteArray:
                 ByteBuffer readLength = ByteBuffer.wrap(stream.readNBytes(4));
                 int length = readLength.getInt();
                 byte[] bts = stream.readNBytes(length);
 
-                tag = new ByteArrayTag(name, bts);
-                break;
+                return new ByteArrayTag(name, bts);
             case String:
                 byte strLength = (byte)stream.read();
                 byte[] strBts = stream.readNBytes(strLength);
                 String s = new String(strBts, StandardCharsets.UTF_8);
-                tag = new StringTag(name, s);
-                break;
+                return new StringTag(name, s);
             case List:
                 TagDef listType = TagDef.getDef((byte)stream.read());
                 byte listLength = (byte)stream.read();
@@ -264,13 +257,11 @@ public abstract class NbtTag {
                     liTag.add(tv);
                 }
 
-                tag = new ListTag(name, liTag);
-                break;
+                return new ListTag(name, liTag);
             case Compound:
-                CompoundTag cTag = new CompoundTag(name);
                 boolean stop = false;
                 ArrayList<NbtTag> cmpItem = new ArrayList<>();
-                do {
+                while (!stop) {
                     NbtTag t = readFromStream(stream, true);
                     if (t.getID() == TagDef.End) {
                         stop = true;
@@ -279,37 +270,35 @@ public abstract class NbtTag {
                     if (!stop) {
                         cmpItem.add(t);
                     }
-                } while (!stop);
-
-                tag = cTag;
-                break;
+                }
+                return new CompoundTag(name, cmpItem);
             case IntArray:
                 readLength = ByteBuffer.wrap(stream.readNBytes(4));
                 length = readLength.getInt();
 
                 IntArrayTag t = new IntArrayTag(name);
                 for (int x = 0; x < length; x++) {
-                    IntTag iTag = (IntTag)readFromStream(stream, false);
-                    t.add(iTag.getIntValue());
+                    buffer = ByteBuffer.wrap(stream.readNBytes(4));
+                    int arrayInt = buffer.getInt();
+                    t.add(arrayInt);
                 }
 
-                tag = t;
-                break;
+                return t;
             case LongArray:
                 readLength = ByteBuffer.wrap(stream.readNBytes(4));
                 length = readLength.getInt();
 
                 LongArrayTag longTag = new LongArrayTag(name);
                 for (int x = 0; x < length; x++) {
-                    LongTag iTag = (LongTag)readFromStream(stream, false);
-                    longTag.add(iTag.getIntValue());
+                    buffer = ByteBuffer.wrap(stream.readNBytes(4));
+                    long arrayInt = buffer.getLong();
+                    longTag.add(arrayInt);
                 }
 
-                tag = longTag;
-                break;
+                return longTag;
+            default:
+                throw new NbtFormatException("Unrecognized NBT Tag.");
         }
-
-        return tag;
     }
 
     /**
@@ -352,33 +341,70 @@ public abstract class NbtTag {
      * @return A complete NBT Tag with a name and value.
      * @param <T> The type of the value.
      */
-    public static <T> NbtTag create(String name, T value) {
-        NbtTag tag = null;
+    public static <T> NbtTag create(String name, T value) throws NbtFormatException {
         if (value instanceof boolean) {
-            tag = new BoolTag(name, (boolean)value);
+            return new BoolTag(name, (boolean)value);
         } else if (value instanceof byte) {
-            tag = new ByteTag(name, (byte)value);
+            return new ByteTag(name, (byte)value);
         } else if (value instanceof short) {
-            tag = new ShortTag(name, (short)value);
+            return new ShortTag(name, (short)value);
         } else if (value instanceof int) {
-            tag = new IntTag(name, (int)value);
+            return new IntTag(name, (int)value);
         } else if (value instanceof long) {
-            tag = new LongTag(name, (long)value);
+            return new LongTag(name, (long)value);
         } else if (value instanceof float) {
-            tag = new FloatTag(name, (float)value);
+            return new FloatTag(name, (float)value);
         } else if (value instanceof double) {
-            tag = new DoubleTag(name, (double)value);
+            return new DoubleTag(name, (double)value);
         } else if (value instanceof String) {
-            tag = new StringTag(name, (String)value);
+            return new StringTag(name, (String)value);
         } else if (value instanceof byte[]) {
-            tag = new ByteArrayTag(name, (byte[])value);
+            return new ByteArrayTag(name, (byte[])value);
         } else if (value instanceof int[]) {
-            tag = new IntArrayTag(name, (int[])value);
+            return new IntArrayTag(name, (int[])value);
         } else if (value instanceof long[]) {
-            tag = new LongArrayTag(name, (long[])value);;
+            return new LongArrayTag(name, (long[])value);
         }
 
-        return tag;
+        try {
+            NbtTag[] tagArray = (NbtTag[])value;
+
+            if (tagArray[0].Name != null) {
+                return new CompoundTag(name, tagArray);
+            } else {
+                return new ListTag(name, tagArray);
+            }
+
+        } catch (ClassCastException ex) {
+            try {
+                // try again as List
+                List<NbtTag> tagList = (List<NbtTag>) value;
+
+                if (tagList.get(0).Name != null) {
+                    return new CompoundTag(name, tagList);
+                } else {
+                    return new ListTag(name, tagList);
+                }
+            } catch (ClassCastException e2) {
+                throw new NbtFormatException("No applicable NBT Tag type.");
+            }
+        }
+    }
+
+    private static boolean oneType(List<NbtTag> items) {
+        TagDef type0 = null;
+
+        for (int x = 0; x < items.size(); x++) {
+            NbtTag tag = items.get(x);
+            if (x == 0) type0 = tag.getID();
+            else {
+                if (type0 != tag.getID()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

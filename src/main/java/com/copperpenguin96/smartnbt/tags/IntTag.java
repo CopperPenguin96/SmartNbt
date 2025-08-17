@@ -54,6 +54,7 @@ public class IntTag extends NbtTag {
     }
 
     public String toString(SerializerOptions options) {
+        if (options == null) return toString();
         boolean hex = options.contains("use-hex");
 
         if (hex) {

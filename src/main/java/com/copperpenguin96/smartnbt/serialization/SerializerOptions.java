@@ -8,6 +8,9 @@ public abstract class SerializerOptions {
     protected final HashMap<String, Object> _options = new HashMap<>();
     private TagDef _type;
 
+    public TagDef getType() {
+        return _type;
+    }
     protected SerializerOptions(TagDef type) {
         type = _type;
     }

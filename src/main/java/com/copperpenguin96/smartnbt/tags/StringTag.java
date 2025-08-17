@@ -13,12 +13,6 @@ public class StringTag extends NbtTag {
         setID(TagDef.String);
     }
 
-    /**
-     * Creates and NBT String Tag. If names needs to be empty or not present
-     * assign as null.
-     * @param name
-     * @param value
-     */
     public StringTag(String name, String value) {
         super(name, value);
         setPayload();
@@ -42,12 +36,12 @@ public class StringTag extends NbtTag {
         return TagDef.String;
     }
 
-    public int size() {
+    public int length() {
         return getStringValue().length();
     }
 
     private void setPayload() {
-        super.setPayload((byte)(size() + 2));
+        super.setPayload((byte)(length() + 2));
     }
 
     @Override

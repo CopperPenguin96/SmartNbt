@@ -1,5 +1,8 @@
 package com.copperpenguin96.smartnbt.tags;
 
+import com.copperpenguin96.smartnbt.NbtFormatException;
+import com.copperpenguin96.smartnbt.serialization.FloatSerializerOptions;
+import com.copperpenguin96.smartnbt.serialization.IntSerializerOptions;
 import com.copperpenguin96.smartnbt.serialization.SerializerOptions;
 
 import java.io.InvalidObjectException;
@@ -62,7 +65,7 @@ public class CompoundTag extends NbtTag {
         return getItems().length;
     }
 
-    public void setPayload() {
+    private void setPayload() {
         byte payload = (byte)getItems().length;
 
         for (NbtTag tag : getItems()) {
@@ -72,7 +75,7 @@ public class CompoundTag extends NbtTag {
         super.setPayload(payload);
     }
 
-    public <T> void add(String name, T value) throws InvalidObjectException {
+    public <T> void add(String name, T value) throws InvalidObjectException, NbtFormatException {
         NbtTag tag = NbtTag.create(name, value);
         add(tag);
     }
@@ -190,7 +193,7 @@ public class CompoundTag extends NbtTag {
         return compBuilder.toString();
     }
 
-    public String toString(SerializerOptions options) {
+    public String toString(SerializerOptions[] options) {
         StringBuilder compBuilder = new StringBuilder("{");
         if (size() == 0) return "{}";
 
@@ -210,11 +213,23 @@ public class CompoundTag extends NbtTag {
             switch (tag.getID()) {
                 case Float:
                     FloatTag floatTag = (FloatTag)tag;
-                    compBuilder.append(floatTag.toString(options));
+                    FloatSerializerOptions so = null;
+                    for (SerializerOptions o : options) {
+                        if (o.getType() == TagDef.Float) {
+                            so = (FloatSerializerOptions)o;
+                        }
+                    }
+                    compBuilder.append(floatTag.toString(so));
                     break;
                 case Int:
                     IntTag intTag = (IntTag)tag;
-                    compBuilder.append(intTag.toString(options));
+                    IntSerializerOptions soI = null;
+                    for (SerializerOptions o : options) {
+                        if (o.getType() == TagDef.Int) {
+                            soI = (IntSerializerOptions)o;
+                        }
+                    }
+                    compBuilder.append(intTag.toString(soI));
                     break;
                 default:
                     compBuilder.append(tag);

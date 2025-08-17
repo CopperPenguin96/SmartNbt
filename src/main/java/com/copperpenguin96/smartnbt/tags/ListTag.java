@@ -1,6 +1,8 @@
 package com.copperpenguin96.smartnbt.tags;
 
 import com.copperpenguin96.smartnbt.NbtFormatException;
+import com.copperpenguin96.smartnbt.serialization.FloatSerializerOptions;
+import com.copperpenguin96.smartnbt.serialization.IntSerializerOptions;
 import com.copperpenguin96.smartnbt.serialization.SerializerOptions;
 
 import java.io.IOException;
@@ -22,15 +24,6 @@ public class ListTag extends NbtTag {
         _type = type;
     }
 
-    private <T> TagDef getType(T value) throws NbtFormatException {
-        NbtTag tag = (NbtTag)value;
-        return tag.getID();
-    }
-
-    private <T> T[] getTArray(List<T> tA) {
-        return (T[])tA.toArray();
-    }
-    
     public <T> ListTag(String name, ArrayList<T> value) throws NbtFormatException {
         super(name);
         setValue(getTArray(value));
@@ -65,6 +58,15 @@ public class ListTag extends NbtTag {
         _type = getType(value[0]);
     }
 
+    private <T> TagDef getType(T value) throws NbtFormatException {
+        NbtTag tag = (NbtTag)value;
+        return tag.getID();
+    }
+
+    private <T> T[] getTArray(List<T> tA) {
+        return (T[])tA.toArray();
+    }
+
     @Override
     public TagDef getID() {
         return TagDef.List;
@@ -92,7 +94,7 @@ public class ListTag extends NbtTag {
     }
 
     public <T> void add(String name, T value) throws InvalidObjectException {
-        NbtTag tag = NbtTag.create(name, value);
+        NbtTag tag = (NbtTag)value;
         add(tag);
     }
 
@@ -105,11 +107,16 @@ public class ListTag extends NbtTag {
         return Arrays.stream(getItems()).toList().contains(item);
     }
 
-    public boolean remove(NbtTag tag) {
-        List<NbtTag> li = Arrays.stream(getItems()).toList();
+    public void remove(NbtTag tag) {
+        ArrayList<NbtTag> li = (ArrayList<NbtTag>)Arrays.stream(getItems()).toList();
         li.remove(tag);
         setValue(li);
-        return true;
+    }
+
+    public void remove(int index) {
+        ArrayList<NbtTag> li = (ArrayList<NbtTag>)Arrays.stream(getItems()).toList();
+        li.remove(index);
+        setValue(li);
     }
 
     public <T> void setValue(ArrayList<T> li) {
@@ -162,7 +169,8 @@ public class ListTag extends NbtTag {
         return start.toString();
     }
 
-    public String toString(SerializerOptions options) {
+    public String toString(SerializerOptions[] options) {
+        if (options == null) return toString();
         StringBuilder start = new StringBuilder("[");
 
         if (size() == 0) return "[]";
@@ -174,14 +182,30 @@ public class ListTag extends NbtTag {
             switch (_type) {
                 case Float:
                     FloatTag floatTag = (FloatTag)tag;
-                    start.append(floatTag.toString(options));
+                    FloatSerializerOptions fo = null;
+
+                    for (SerializerOptions o : options) {
+                        if (o.getType() == TagDef.Float) {
+                            fo = (FloatSerializerOptions)o;
+                        }
+                    }
+
+                    start.append(floatTag.toString(fo));
                     break;
                 case Int:
                     IntTag intTag = (IntTag)tag;
-                    start.append(intTag.toString(options));
+                    IntSerializerOptions io = null;
+                    for (SerializerOptions o : options) {
+                        if (o.getType() == TagDef.Int) {
+                            io = (IntSerializerOptions)o;
+                        }
+                    }
+
+                    start.append(intTag.toString(io));
                     break;
                 default:
                     start.append(tag);
+                    break;
             }
 
             if (x < getItems().length - 1) start.append(", ");

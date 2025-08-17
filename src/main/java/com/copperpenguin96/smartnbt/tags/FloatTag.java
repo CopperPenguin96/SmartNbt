@@ -65,6 +65,7 @@ public class FloatTag extends NbtTag {
     }
 
     public String toString(SerializerOptions options) {
+        if (options == null) return toString(); // return as if there are no options.
         float value = getFloatValue();
         int whole = getWholePart();
         int decimal = getDecimalPart();
